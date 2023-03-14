@@ -56,7 +56,7 @@ class Dqn():
         self.last_reward = 0
     
     def select_action(self, state):
-        probs = F.softmax(self.model(Variable(state, volatile =True))*7)
+        probs = F.softmax(self.model(Variable(state, volatile =True))*100)
         action = probs.multinomial(num_samples=1)      
         return action.data[0,0]
         
@@ -91,14 +91,14 @@ class Dqn():
         return sum(self.reward_window)/(len(self.reward_window)+1.)
     def save(self):
         torch.save({ 'state_dict' : self.model.state_dict(), 
-                    'optimizer': self.optimizer.state_dict,
+                    'optimizer' : self.optimizer.state_dict(),
                     }, 'last_brain.pth')
     def load(self):
         if os.path.isfile('last_brain.pth'):
             print("> loading check point......")
             checkpoint = torch.load('last_brain.pth')
             self.model.load_state_dict(checkpoint['state_dict'])
-            self.model.optimizer_state_dict(checkpoint['optimizer'])
+            self.optimizer.load_state_dict(checkpoint['optimizer'])
             print('done')
         else:
             print("not saved")
